@@ -1,0 +1,94 @@
+app = angular.module("remind_me", ["ngResource"])
+
+app.config ['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
+  $routeProvider
+  .when '/',
+    controller: EventsCtrl
+    templateUrl: '<%= asset_path('list.html') %>'
+  .when '/edit/:eventId', 
+    controller: DetailCtrl
+    templateUrl: '<%= asset_path('details.html') %>'
+  .when '/new',
+    controller: NewCtrl
+    templateUrl: '<%= asset_path('details.html') %>'
+
+  .otherwise redirectTo: '/'
+
+  $locationProvider.html5Mode true
+]
+
+
+app.config ["$httpProvider", ($httpProvider) ->
+  $httpProvider.defaults.headers.common['X-CSRF-Token'] = $('meta[name=csrf-token]').attr('content')
+]
+
+
+app.directive "datepicker", ["$parse", ($parse) ->
+  restrict: "A"
+  link: (scope, element, attrs) ->
+    parsed = $parse(attrs.datepicker)
+    $(element).Zebra_DatePicker
+       view: 'months',
+       format: 'M d'
+       onSelect: (dateText, inst) ->
+         months = new Array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
+         d = new Date(inst.toString())
+         month = d.getMonth()
+
+         day = d.getDate()
+         formatted_date = day.toString() + " " + months[month]
+         scope.detail.date = formatted_date
+         scope.$apply ->
+           parsed.assign scope, dateText
+
+]
+
+# bootstrap tooltip
+app.directive "popOver", ($http) ->
+  restrict: "C"
+  link: (scope, element, attr) ->
+    element.tooltip()
+    element.bind "mouseover", (e) ->
+      element.tooltip "show"
+
+
+app.factory "Event", ["$resource", ($resource) ->
+  Event = $resource("/events/:id", {id: "@id"}, { update: {method: "PUT"}})
+]
+
+@EventsCtrl = ["$scope", "Event", ($scope, Event) ->
+  $scope.events = Event.query()
+  $scope.predicate = 'date'
+  $scope.reverse = 'false'
+]
+
+@DetailCtrl = ["$scope", "$routeParams", "$location", "Event", ($scope, $routeParams, $location, Event) ->
+  $scope.detail = Event.get({id:$routeParams.eventId})
+
+  $scope.updateEvent = ->
+    $scope.detail.id = $routeParams.eventId
+    Event.update($scope.detail)
+    $location.path('/')
+
+  $scope.destroyEvent = ->
+    $('#confirmationModal').modal('hide')
+    $scope.detail.id = $routeParams.eventId
+    Event.delete($scope.detail)
+    $location.path('/')
+   
+  $scope.method = 'updateEvent()'
+  $scope.action = 'Update'
+  $scope.deletable = 'true'
+]
+
+@NewCtrl = ["$scope", "$location", "Event", ($scope, $location, Event) ->
+  $scope.detail = {}
+
+  $scope.addEvent = ->
+    event = Event.save($scope.detail)
+    $location.path('/')
+
+  $scope.method = 'addEvent()'
+  $scope.action = 'Save'
+]
+

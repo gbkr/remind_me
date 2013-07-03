@@ -1,0 +1,39 @@
+<form name="detailForm" ng-submit='{{method}}'>
+  <div ng-class="{error: detailForm.name.$invalid}">
+    <p>
+    <label><b>Event</b></label>
+    <input type="text" name="name" ng-model="detail.name" required>
+    <span ng-show="detailForm.name.$error.required" class="help-inline">
+      Required</span>
+    </p> 
+    <p> 
+    <label><b>Details</b></label>
+    <textarea name="details" ng-model="detail.details" rows='6' required></textarea>
+    <span ng-show="detailForm.details.$error.required" class="help-inline">
+      Required</span>
+    </p>
+    <p>
+    <label><b>Date</b></label>
+
+    <input id="dateissue" type="text" name="date" ng-model="detail.date" datepicker="selectedDate" required></input>
+    <span ng-show="detailForm.date.$error.required" class="help-inline">
+      Required</span>
+    </p>
+    <p>
+    <a href="/" class="btn">Cancel</a>
+    <button class="btn" ng-disabled='detailForm.$invalid'>{{action}}</button> 
+    <a href="#confirmationModal" role="button" class="btn" data-toggle="modal" ng-show="deletable">Delete</a>
+    </p>
+  </div>
+</form>
+
+<div id="confirmationModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modalText" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="modalText">Are you sure?</h3>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    <button class="btn btn-primary" ng-click="destroyEvent()">Delete</button>
+  </div>
+</div>
