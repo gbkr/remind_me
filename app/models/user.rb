@@ -29,4 +29,9 @@ class User < ActiveRecord::Base
   def blank_password?
     self.encrypted_password.blank?
   end
+
+  def current_time
+    Time.zone.now.in_time_zone(self.time_zone)
+  end
+
 end

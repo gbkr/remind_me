@@ -25,11 +25,11 @@ group :development, :test do
   gem 'better_errors'
   gem "binding_of_caller"
   gem 'awesome_print'
+  gem 'unicorn'
 end
 
 group :test do
   gem 'capybara', '1.1.2'
-  gem 'launchy'
 end
 
 gem 'rails_12factor', group: :production
