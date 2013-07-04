@@ -27,13 +27,18 @@ class ReminderFinder
     return if time_to_event < 0
 
     if time_to_event <= 96 and time_to_event > 72
-      time_to_reminder = time_to_event - 72
-      UserMailer.delay(run_at: time_to_reminder.floor.hours.from_now).
-        event_reminder(user, event)
+#      time_to_reminder = time_to_event - 72
+      #  UserMailer.delay(run_at: time_to_reminder.floor.hours.from_now).
+      #    event_reminder(user, event)
+
+      UserMailer.delay.event_reminder(user, event)
+
 
     elsif time_to_event <= 24 
-      UserMailer.delay(run_at: time_to_event.floor.hours.from_now).
-        event_notification(user, event)
+      UserMailer.delay.event_notification(user, event)
+
+      # UserMailer.delay(run_at: time_to_event.floor.hours.from_now).
+      #   event_notification(user, event)
     end
   end
 end
